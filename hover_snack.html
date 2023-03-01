@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 400px;
+        }
+
+        .square {
+            background-color: #1d1d1d;
+            box-shadow: 0 0 2px #000;
+            height: 16px;
+            width: 16px;
+            margin: 2px;
+            transition: 2s ease;
+        }
+
+        .square:hover {
+            transition-duration: 0s;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div class="container" id="container">
+
+    </div>
+    <script>
+        const container = document.getElementById('container')
+        const colors = ['#e74c3c', '#8e44ad', '#348db', '#e67e22', '#2ecc71']
+
+        const SQUARES = 500;
+        for (let i = 0; i < SQUARES; i++) {
+            const square = document.createElement('div')
+            square.classList.add('square')
+
+            square.addEventListener('mouseover', () => setColor(square))
+            square.addEventListener('mouseout', () => removeColor(square))
+
+            container.appendChild(square)
+
+        }
+
+        function setColor(element) {
+            const color = getRendomColor()
+            element.style.background = color;
+            element.style.boxShodow = `0 0 2px ${color} , 0 0 10px ${color}`
+        }
+
+        function removeColor(ele) {
+            ele.style.background = '#1d1d1d'
+            ele.style.boxShodow = `0 0 2px #000`
+        }
+
+        function getRendomColor() {
+            return colors[Math.floor(Math.random() * colors.length)]
+        }
+    </script>
+</body>
+
+</html>
