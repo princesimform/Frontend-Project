@@ -1,5 +1,4 @@
 function Book(id, title, author, isbn) {
-    this.id = id;
     this.title = title;
     this.author = author;
     this.isbn = isbn;
@@ -27,20 +26,18 @@ class LocalList {
 // Session Storage Class
 class SessionList {
     addItem(book) {
-        console.log("We are in Session storage");
         let list = [];
         if (sessionStorage.getItem('list') === null) {
             list = [];
         } else {
             list = JSON.parse(sessionStorage.getItem('list'));
         }
+        console.log(book);
         list.push(book);
-        console.log(list);
         sessionStorage.setItem('list', JSON.stringify(list))
     }
 
     removeItem(id) {
-        console.log('remove from session', id);
         let listData = [];
         let ui = new UI();
 
@@ -50,13 +47,10 @@ class SessionList {
             listData = JSON.parse(sessionStorage.getItem('list'));
         }
         listData.forEach((item, inx) => {
-            console.log(id);
-            console.log(item.id);
-            if (id  == item.id) {
-                console.log("it's removed");
+            if (id == inx) {
                 listData.splice(inx, 1);
-            }else {
-                listData[inx].id = inx ;
+            } else {
+                listData[inx].id = inx;
             }
         });
 
@@ -76,9 +70,11 @@ UI.prototype.addBookToList = function (book) {
     const row = document.createElement('tr');
 
     console.log(row);
-
+    let BookListData = JSON.parse(sessionStorage.getItem('list')) ;
+    
+    console.log(BookListData);
     row.innerHTML = `
-    <td>${book.id + 1}</td>
+    <td>${BooklistCount}</td>
     <td>${book.title}</td>
     <td>${book.author}</td>
     <td>${book.isbn}</td>
@@ -137,9 +133,6 @@ UI.prototype.showAlert = function (msg, className) {
     }, 3000);
 }
 //Event Listenrs
-let Booklist = JSON.parse(sessionStorage.getItem('list')); 
-let count = Booklist == null ? 0 : Booklist[JSON.parse(sessionStorage.getItem  ('list')).length - 1].id;
-
 //Add Item
 
 document.getElementById('book-form').addEventListener('submit', function (e) {
@@ -150,10 +143,9 @@ document.getElementById('book-form').addEventListener('submit', function (e) {
         isbn = document.getElementById('isbn').value
 
 
-    const book = new Book(count, title, author, isbn);
-    count++;
-
-    // Instantiate UI
+    const book = new Book(title, author, isbn);
+console.log(book);
+    // Instantiate UI   
     const ui = new UI();
     const sessionList = new SessionList();
     const localList = new LocalList();
@@ -162,8 +154,8 @@ document.getElementById('book-form').addEventListener('submit', function (e) {
     if (title == '' || author == '' || isbn == '') {
         ui.showAlert('Please fill in all fields ', 'alert alert-danger');
     } else {
-        ui.addBookToList(book);
         sessionList.addItem(book);
+        ui.addBookToList(book);
         localList.checkLocal();
 
         ui.showAlert('Book Added SuccessFully ', 'alert alert-success');
@@ -202,5 +194,5 @@ function loadEventListeners() {
     if (!localList.checkLocal()) {
         sessionStorage.setItem('list', localStorage.getItem('list'));
     }
-    
+
 } 
