@@ -1,198 +1,210 @@
-function Book(id, title, author, isbn) {
-    this.title = title;
-    this.author = author;
-    this.isbn = isbn;
+//Book Object
+function Book(title, author, isbn) {
+	this.title = title;
+	this.author = author;
+	this.isbn = isbn;
 }
 
-
-//Local Storage Class
+//local Storage Object
 class LocalList {
-    checkLocal() {
-        console.log(JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list')));
-        if (JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list'))) {
-            document.getElementById('storeLocal').style.display = 'none';
-            return true;
-        } else {
-            document.getElementById('storeLocal').style.display = 'block';
-            return false;
-        }
-    }
-    addItem() {
-        localStorage.setItem('list', sessionStorage.getItem('list'));
-        document.getElementById('storeLocal').style.display = 'none';
-    }
+	checkLocal() {
+		console.log(JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list')));
+		if (JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list'))) {
+			document.getElementById('storeLocal').style.display = 'none';
+			return true;
+		} else {
+			document.getElementById('storeLocal').style.display = 'block';
+			return false;
+		}
+	}
+
+	addItem() {
+		localStorage.setItem('list', sessionStorage.getItem('list'));
+		document.getElementById('storeLocal').style.display = 'none';
+	}
 }
 
-// Session Storage Class
+//Session Storage Object
 class SessionList {
-    addItem(book) {
-        let list = [];
-        if (sessionStorage.getItem('list') === null) {
-            list = [];
-        } else {
-            list = JSON.parse(sessionStorage.getItem('list'));
-        }
-        console.log(book);
-        list.push(book);
-        sessionStorage.setItem('list', JSON.stringify(list))
-    }
+	addItem(book) {
+		let listData = [];
+		let id;
+		const ui = new UI();
+		if (sessionStorage.getItem('list') === null) {
+			listData = [];
+			id = 0;
+		} else {
+			listData = JSON.parse(sessionStorage.getItem('list'));
+			id = listData.length;
+		}
 
-    removeItem(id) {
-        let listData = [];
-        let ui = new UI();
+		// Get id from Session Storage and Set to Request Data 
 
-        if (sessionStorage.getItem('list') === null) {
-            listData = []
-        } else {
-            listData = JSON.parse(sessionStorage.getItem('list'));
-        }
-        listData.forEach((item, inx) => {
-            if (id == inx) {
-                listData.splice(inx, 1);
-            } else {
-                listData[inx].id = inx;
-            }
-        });
+		let reqData = book;
+		reqData.id = id;
+		// Store Data
+		console.log("listData");
+		console.log(listData);
+		listData.push(reqData);
+		sessionStorage.setItem('list', JSON.stringify(listData));
 
-        sessionStorage.setItem('list', JSON.stringify(listData));
+		// Show to UI
+		ui.addBookToList(reqData);
 
-    }
+	}
+
+	removeItem(id) {
+		console.log("check for Remove");
+		console.log("id", id);
+		let listData = [];
+		let ui = new UI();
+
+		if (sessionStorage.getItem('list') === null) {
+			listData = []
+		} else {
+			listData = JSON.parse(sessionStorage.getItem('list'));
+		}
+		let count = 0 ;
+		listData.forEach((item , inx) => {
+			console.log(item.id);
+			if (id == item.id) {
+				console.log("it's removed");
+				listData.splice(id, 1);
+			}
+			else {
+				listData[inx].id = count;
+				count++;
+			}
+		});
+
+		sessionStorage.setItem('list', JSON.stringify(listData));
+	}
 }
 
-// Add Item To Local Storage
-function UI() {
+// UI Changes Object
+function UI() { }
 
+UI.prototype.showAlert = function (msg, className) {
+	const div = document.createElement('div');
+	div.className = `alert ${className}`
+
+	div.appendChild(document.createTextNode(msg));
+	// Get Parent
+
+	const container = document.querySelector('.book-list-container');
+	const form = document.querySelector('#book-form')
+	container.insertBefore(div, form);
+
+	setTimeout(() => {
+		document.querySelector('.alert').remove();
+	}, 3000);
 }
 
 UI.prototype.addBookToList = function (book) {
-    const list = document.getElementById('book-list');
 
-    const row = document.createElement('tr');
+	const list = document.getElementById('book-list');
 
-    console.log(row);
-    let BookListData = JSON.parse(sessionStorage.getItem('list')) ;
-    
-    console.log(BookListData);
-    row.innerHTML = `
-    <td>${BooklistCount}</td>
+	const row = document.createElement('tr');
+
+	console.log(row);
+
+	row.innerHTML = `
+    <td>${book.id + 1}</td>
     <td>${book.title}</td>
     <td>${book.author}</td>
     <td>${book.isbn}</td>
     <td><a href="#" class="delete">X</a></td>`;
 
-    console.log(row);
+	list.appendChild(row)
 
-    list.appendChild(row)
 }
 
+// Show All Data Which are in Storage
 UI.prototype.showList = function () {
-    const listData = JSON.parse(sessionStorage.getItem('list'));
-    const list = document.getElementById('book-list');
-    if (listData !== null) {
-        console.log(listData);
-
-        listData.forEach((item, inx) => {
-            let row = document.createElement('tr');
-            row.innerHTML = `
+	const listData = JSON.parse(sessionStorage.getItem('list'));
+	const list = document.getElementById('book-list');
+	if (listData !== null) {
+		listData.forEach((item, inx) => {
+			let row = document.createElement('tr');
+			row.innerHTML = `
                             <td>${inx + 1}</td>
                             <td>${item.title}</td>
                             <td>${item.author}</td>
                             <td>${item.isbn}</td>
                             <td><a href="#" class="delete">X</a></td>`;
 
-            list.appendChild(row)
-        });
-    }
-
-
+			list.appendChild(row)
+		});
+	}
 }
 
-UI.prototype.removeBookToList = function (book) {
-    book.remove();
-}
-
+// Clear Form Data
 UI.prototype.clearFields = function () {
-    document.getElementById('title').value = "";
-    document.getElementById('author').value = "";
-    document.getElementById('isbn').value = "";
+	document.getElementById('title').value = "";
+	document.getElementById('author').value = "";
+	document.getElementById('isbn').value = "";
+}
+//Remove From UI 
+UI.prototype.removeBookToList = function (book) {
+	book.remove();
 }
 
-UI.prototype.showAlert = function (msg, className) {
-    const div = document.createElement('div');
-    div.className = `alert ${className}`
-
-    div.appendChild(document.createTextNode(msg));
-    // Get Parent
-
-    const container = document.querySelector('.book-list-container');
-    const form = document.querySelector('#book-form')
-    container.insertBefore(div, form);
-
-    setTimeout(() => {
-        document.querySelector('.alert').remove();
-    }, 3000);
-}
-//Event Listenrs
-//Add Item
-
+// Form Handling
 document.getElementById('book-form').addEventListener('submit', function (e) {
 
-    //Get Form Value
-    const title = document.getElementById('title').value,
-        author = document.getElementById('author').value,
-        isbn = document.getElementById('isbn').value
+	//Get Form Value
+	const title = document.getElementById('title').value,
+		author = document.getElementById('author').value,
+		isbn = document.getElementById('isbn').value
 
+	const book = new Book(title, author, isbn);
 
-    const book = new Book(title, author, isbn);
-console.log(book);
-    // Instantiate UI   
-    const ui = new UI();
-    const sessionList = new SessionList();
-    const localList = new LocalList();
+	// Objects
+	const ui = new UI();
+	const sessionList = new SessionList();
+	const localList = new LocalList();
 
-    //Validate 
-    if (title == '' || author == '' || isbn == '') {
-        ui.showAlert('Please fill in all fields ', 'alert alert-danger');
-    } else {
-        sessionList.addItem(book);
-        ui.addBookToList(book);
-        localList.checkLocal();
+	// Validate Field 
+	if (title == '' || author == '' || isbn == '') {
+		ui.showAlert('Please fill in all fields ', 'alert alert-danger');
+	} else {
+		sessionList.addItem(book);
+		ui.clearFields();
+		localList.checkLocal();
+	}
 
-        ui.showAlert('Book Added SuccessFully ', 'alert alert-success');
-        //Clear Fields
-        ui.clearFields();
-    }
+	e.preventDefault();
+})
 
-    e.preventDefault();
-});
-
-
-//Delete Item
+//Handling List of Data (Remove Data)
 document.getElementById('book-list').addEventListener('click', function (e) {
-    if (e.target.classList.contains('delete')) {
-        let ui = new UI();
-        let sessionList = new SessionList();
-        let localList = new LocalList();
-        let id = e.target.parentElement.parentElement.children[0].textContent;
-        sessionList.removeItem(id - 1)
-        ui.removeBookToList(e.target.parentElement.parentElement)
-        console.log("check for remove local");
-        localList.checkLocal();
-    }
+	if (e.target.classList.contains('delete')) {
+		let ui = new UI();
+		let sessionList = new SessionList();
+		let localList = new LocalList();
+		let id = e.target.parentElement.parentElement.children[0].textContent;
+		sessionList.removeItem(id - 1)
+		ui.removeBookToList(e.target.parentElement.parentElement)
+		localList.checkLocal();
+	}
 })
 
-document.getElementById('storeLocal').addEventListener('click', function (e) {
-    let localList = new LocalList();
-    localList.addItem();
+//Handling Local Storage
+document.getElementById('storeLocal').addEventListener('click', function () {
+	let localList = new LocalList();
+	localList.addItem();
 })
 
+//Run Onload
 loadEventListeners();
 function loadEventListeners() {
-    let ui = new UI();
-    let localList = new LocalList()
-    ui.showList();
-    if (!localList.checkLocal()) {
-        sessionStorage.setItem('list', localStorage.getItem('list'));
-    }
-
-} 
+	const ui = new UI();
+	let localList = new LocalList()
+	// localStorage.clear();
+	// sessionStorage.clear();
+	if (!localList.checkLocal()) {
+		console.log("set Item  local to session");
+		sessionStorage.setItem('list', localStorage.getItem('list'));
+	}
+	ui.showList();
+}
