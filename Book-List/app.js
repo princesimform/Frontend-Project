@@ -1,14 +1,14 @@
 //Book Object
-function Book(title, author, isbn) {
+function Book(id, title, author, isbn) {
+	this.id = id
 	this.title = title;
 	this.author = author;
 	this.isbn = isbn;
 }
-
+let gobalIndex = 1 ;
 //local Storage Object
 class LocalList {
 	checkLocal() {
-		console.log(JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list')));
 		if (JSON.stringify(sessionStorage.getItem('list')) === JSON.stringify(localStorage.getItem('list'))) {
 			document.getElementById('storeLocal').style.display = 'none';
 			return true;
@@ -26,7 +26,7 @@ class LocalList {
 
 //Session Storage Object
 class SessionList {
-	addItem(book) {
+	addItem(reqData) {
 		let listData = [];
 		let id;
 		const ui = new UI();
@@ -38,13 +38,8 @@ class SessionList {
 			id = listData.length;
 		}
 
-		// Get id from Session Storage and Set to Request Data 
 
-		let reqData = book;
-		reqData.id = id;
 		// Store Data
-		console.log("listData");
-		console.log(listData);
 		listData.push(reqData);
 		sessionStorage.setItem('list', JSON.stringify(listData));
 
@@ -54,8 +49,6 @@ class SessionList {
 	}
 
 	removeItem(id) {
-		console.log("check for Remove");
-		console.log("id", id);
 		let listData = [];
 		let ui = new UI();
 
@@ -64,16 +57,9 @@ class SessionList {
 		} else {
 			listData = JSON.parse(sessionStorage.getItem('list'));
 		}
-		let count = 0 ;
-		listData.forEach((item , inx) => {
-			console.log(item.id);
+		listData.forEach((item, inx) => {
 			if (id == item.id) {
-				console.log("it's removed");
-				listData.splice(id, 1);
-			}
-			else {
-				listData[inx].id = count;
-				count++;
+				listData.splice(inx, 1);
 			}
 		});
 
@@ -101,21 +87,19 @@ UI.prototype.showAlert = function (msg, className) {
 }
 
 UI.prototype.addBookToList = function (book) {
-
 	const list = document.getElementById('book-list');
 
 	const row = document.createElement('tr');
 
-	console.log(row);
-
 	row.innerHTML = `
-    <td>${book.id + 1}</td>
+    <td id=${book.id}>${gobalIndex}</td>
     <td>${book.title}</td>
     <td>${book.author}</td>
     <td>${book.isbn}</td>
     <td><a href="#" class="delete">X</a></td>`;
 
 	list.appendChild(row)
+	gobalIndex++;
 
 }
 
@@ -125,15 +109,7 @@ UI.prototype.showList = function () {
 	const list = document.getElementById('book-list');
 	if (listData !== null) {
 		listData.forEach((item, inx) => {
-			let row = document.createElement('tr');
-			row.innerHTML = `
-                            <td>${inx + 1}</td>
-                            <td>${item.title}</td>
-                            <td>${item.author}</td>
-                            <td>${item.isbn}</td>
-                            <td><a href="#" class="delete">X</a></td>`;
-
-			list.appendChild(row)
+			this.addBookToList(item);
 		});
 	}
 }
@@ -149,7 +125,7 @@ UI.prototype.removeBookToList = function (book) {
 	book.remove();
 }
 
-// Form Handling
+// Form Handling , Add Data
 document.getElementById('book-form').addEventListener('submit', function (e) {
 
 	//Get Form Value
@@ -157,7 +133,8 @@ document.getElementById('book-form').addEventListener('submit', function (e) {
 		author = document.getElementById('author').value,
 		isbn = document.getElementById('isbn').value
 
-	const book = new Book(title, author, isbn);
+	let id = new Date().getUTCMilliseconds();
+	const book = new Book(id, title, author, isbn);
 
 	// Objects
 	const ui = new UI();
@@ -182,8 +159,8 @@ document.getElementById('book-list').addEventListener('click', function (e) {
 		let ui = new UI();
 		let sessionList = new SessionList();
 		let localList = new LocalList();
-		let id = e.target.parentElement.parentElement.children[0].textContent;
-		sessionList.removeItem(id - 1)
+		let id = e.target.parentElement.parentElement.children[0].id;
+		sessionList.removeItem(id)
 		ui.removeBookToList(e.target.parentElement.parentElement)
 		localList.checkLocal();
 	}
@@ -203,7 +180,6 @@ function loadEventListeners() {
 	// localStorage.clear();
 	// sessionStorage.clear();
 	if (!localList.checkLocal()) {
-		console.log("set Item  local to session");
 		sessionStorage.setItem('list', localStorage.getItem('list'));
 	}
 	ui.showList();
