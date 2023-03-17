@@ -8,6 +8,11 @@
     <title>Book List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
 
     <style>
         .success,
@@ -29,28 +34,80 @@
 </head>
 
 <body>
+    <div class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a href="#" class="navbar-brand">Book Manager</a>
+            <div class="d-flex ">
+                <button class="local btn btn-outline-success mr-3" id="storeLocal">Store To Server</button>
+            </div>
+        </div>
+
+    </div>
+    <div class="container-fluid">
+        <table class="table mb-0">
+            <tr>
+                <form action="" id="book-form">
+                    <td>
+                        <input placeholder="Book Title" maxlength="80" type="text" id="title" class="form-control"
+                            required>
+
+                    </td>
+                    <td>
+                        <input placeholder="Author Name" maxlength="50" type="text" id="author" class="form-control"
+                            required>
+                    </td>
+                    <td>
+                        <input placeholder="ISBN No." maxlength="13" type="text" id="isbn" class="form-control"
+                            required>
+                    </td>
+                    <td>
+                        <button type="submit"  id="toastbtn" class="btn btn-outline-success w-100">Submit</button>
+                    </td>
+                </form>
+            </tr>
+        </table>
+
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Title</th>
+                    <th class="text-center">Author</th>
+                    <th class="text-center">ISBN No.</th>
+                    <th class="text-center">Update</th>
+                    <th class="text-center">Remove</th>
+                </tr>
+            </thead>
+            <tbody class="text-center" id="book-list">
+
+            </tbody>
+        </table>
+    </div>
     <div class="container  mt-4">
         <div class="row">
             <div class="col align-self-center book-list-container">
-                <h1 class="">Add Book</h1>
+                <!-- <h1 class="">Add Book</h1> -->
 
-                <form action="" id="book-form">
+                <!-- <form action="" id="book-form">
                     <div class="mb-3">
                         <label for="title" class="form-label font-weight-bold">Title</label>
-                        <input type="text" id="title" class="form-control">
+                        <input maxlength="80" type="text" id="title" class="form-control" required>
+                        <div class="invalid-feedback">
+                            required
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="author" class="form-label font-weight-bold">Author</label>
-                        <input type="text" id="author" class="form-control">
+                        <input maxlength="50" type="text" id="author" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="isbn" class="form-label font-weight-bold">ISBN No.</label>
-                        <input type="text" id="isbn" class="form-control">
+                        <input maxlength="13" type="text" id="isbn" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-outline-primary w-100">Submit</button>
-                </form>
+                </form> -->
 
-                <button class="local btn btn-outline-success w-100 mt-3" id="storeLocal">Store to Server</button>
+                <!-- <button class="local btn btn-outline-success w-100 mt-3" id="storeLocal">Store to Server</button>
                 <table class="table mt-5">
                     <thead>
                         <th>Id</th>
@@ -58,12 +115,69 @@
                         <th>Author</th>
                         <th>ISBN No.</th>
                         <th></th>
+                        <th></th>
                     </thead>
                     <tbody id="book-list"></tbody>
-                </table>
+                </table> -->
+
+
+
+
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="" id="update-form">
+                        <div class="modal-body">
+                            <div class="">
+                                <label for="title" class="form-label font-weight-bold">Title</label>
+                                <input maxlength="80" type="text" id="update-title" class="form-control">
+                            </div>
+                            <div class="">
+                                <label for="author" class="form-label font-weight-bold">Author</label>
+                                <input maxlength="50" type="text" id="update-author" class="form-control">
+                            </div>
+                            <div class="">
+                                <label for="isbn" class="form-label font-weight-bold">ISBN No.</label>
+                                <input maxlength="13" type="text" id="update-isbn" class="form-control">
+                            </div>
+                            <div class="">
+                                <input type="hidden" id="update-id" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save Changes</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- <button type="button" class="btn btn-primary" id="toastbtn">Show Toast</button> -->
+        <div id="toastBox" class="mb-3 me-3 position-fixed bottom-0 end-0 toast-add toast text-white border-0"
+            role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="toastBody" class="toast-body">
+                    
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
         </div>
     </div>
+    <script>
+
+    </script>
     <script src="./app.js"></script>
 </body>
 
