@@ -6,10 +6,10 @@ function showToast(data, classes) {
 	document.getElementById('toastBox').classList.add(classes);
 	if (document.getElementById('toastBox').classList.contains('bg-primary') && classes == "bg-danger") {
 		document.getElementById('toastBox').classList.remove('bg-primary');
-	} else if (document.getElementById('toastBox').classList.contains('bg-danger') && classes == "bg-primary"){
-		document.getElementById('toastBox').classList.remove('bg-primary');
+	} else if (document.getElementById('toastBox').classList.contains('bg-danger') && classes == "bg-primary") {
+		document.getElementById('toastBox').classList.remove('bg-danger');
 	}
-		console.log(document.getElementById('toastBox').classList);
+	console.log(document.getElementById('toastBox').classList);
 	var toastElList = [].slice.call(document.querySelectorAll('.toast-add'))
 	var toastList = toastElList.map(function (toastEl) {
 		return new bootstrap.Toast(toastEl)
@@ -47,7 +47,8 @@ class SessionList {
 	addItem(reqData) {
 		let listData = [];
 		const ui = new UI();
-		if (sessionStorage.getItem('list') === null) {
+		if (sessionStorage.getItem('list') === null || sessionStorage.getItem('list') == "null") {
+			console.log("You Are At Null");
 			listData = [];
 		} else {
 			listData = JSON.parse(sessionStorage.getItem('list'));
